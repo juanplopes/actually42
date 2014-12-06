@@ -5,265 +5,204 @@
     <!--[if IE]>
     <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sequence Predictor</title>
+    <title>It Is Actually 42</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
     <style>
-        div.content {
-            max-width: 800px;
-            width: 100%;
-            margin: 0 auto;
-        }
 
-        #sequence {
-            width: 100%;
-            box-sizing: border-box;
-            -webkit-box-sizing:border-box;
-            -moz-box-sizing: border-box;
-        }
+    body {
+        text-align: center;
+    }
 
-        #result {
-            text-align: center;
+    @media (min-width: 768px) {
+        .container {
+            max-width: 730px;
         }
+    }
+
+    #sequence {
+        width: 100%;
+        box-sizing: border-box;
+        -webkit-box-sizing:border-box;
+        -moz-box-sizing: border-box;
+    }
+
+    .btn.function {
+        width: 120px;
+    }
+
+    .btn.other {
+        width: 190px;
+    }
+
+    .equation {
+        font-size: 20px;
+        position: absolute;
+        width: auto;
+        left: 0;
+        right: 0;
+    }
+    .explanation {
+        margin-top: 20px;
+    }
+
     </style>
 </head>
 <body>
-<div class="content">
-    <h1>Sequences</h1>
+    <div class="container">
+        <p class="explanation">
+            Why do people keep asking to find the next term in sequences?
+            Anyone with real math knowledge knows there are infinite answers.
+            So, from now on, for any sequence I see, the next term will
+            always the same:
+        </p>
+        <h1 class="title">It Is Actually 42</h1>
 
-    <div class="sequences">
-        <input id="sequence" disabled="disabled"></textarea>
+
+        <p class="btn-group" data-toggle="buttons">
+            <label class="btn btn-primary function active">
+                <input type="radio" name="function" id="is_sequence" autocomplete="off" checked> Sequence
+            </label>
+            <label class="btn btn-primary function">
+                <input type="radio" name="function" id="is_function" autocomplete="off"> Function
+            </label>
+        </p>
+
+        <p class="sequences">
+            <input id="sequence" disabled="disabled"></textarea>
+        </p>
+
+        <p class="btn-group" data-toggle="buttons">
+            <label class="btn btn-primary other active">
+                <input type="radio" name="other" id="is_42" autocomplete="off" checked> Is actually 42
+            </label>
+            <label class="btn btn-primary other">
+                <input type="radio" name="other" id="is_other" autocomplete="off"> Try something else
+            </label>
+        </p>
+
+
+
+        <p id="status">Initializing...</p>
+
+        <hr/>
+
+        <div id="result">
+
+        </div>
     </div>
-
-    <p id="options">
-        <input type="checkbox" id="function"/>
-        <label for="function">Is actually a function</label>
-    </p>
-
-
-    <p id="status">Initializing...</p>
-
-    <hr/>
 
     <div id="result">
-        <p>$f(0) = 1$</p>
 
-        <p>$f(1) = 4$</p>
-
-        <p>$f(2) = 9$</p>
-
-        <p>$f(3) = 16$</p>
     </div>
-</div>
 
-<div id="result">
-
-</div>
-
-<script src="jquery-2.1.1.min.js"></script>
-<script src="underscore-min.js"></script>
-<script src="mathjax/MathJax.js">
-    MathJax.Hub.Config({
-      extensions: ["tex2jax.js"],
-      jax: ["input/TeX","output/HTML-CSS"],
-      tex2jax: {inlineMath: [["$","$"]]}
-    });
-</script>
-
-<script>
-    var Frac = function(a, b) {
-        this.a = a;
-        this.b = b;
-    };
-
-    var gcd = function(a, b) {
-        a = Math.floor(a);
-        b = Math.floor(b);
-        while(b) {
-            var c = a%b;
-            a = b;
-            b = c;
-        }
-        return a;
-    }
-
-    Frac.prototype.simplify = function() {
-        if (this.isZero()) return new Frac(0, 1);
-        var g = gcd(this.a, this.b);
-        if ((g<0) != (this.b<0)) g*=-1;
-        return new Frac(this.a/g, this.b/g);
-    }
-
-    Frac.prototype.add = function(that) {
-        return new Frac(this.a*that.b+that.a*this.b, this.b*that.b).simplify();
-    }
-
-    Frac.prototype.neg = function() {
-        return new Frac(-this.a, this.b);
-    }
-
-    Frac.prototype.sub = function(that) {
-        return this.add(that.neg());
-    }
-
-    Frac.prototype.mul = function(that) {
-        return new Frac(this.a*that.a, this.b*that.b).simplify();
-    }
-
-    Frac.prototype.inv = function() {
-        return new Frac(this.b, this.a);
-    }
-
-    Frac.prototype.div = function(that) {
-        return this.mul(that.inv());
-    }
-
-    Frac.prototype.abs = function(that) {
-        return new Frac(Math.abs(this.a), Math.abs(this.b));
-    }
-
-
-    Frac.prototype.isZero = function() {
-        return Math.abs(this.a) < 1e-6;
-    }
-
-    Frac.prototype.isInt = function() {
-        return Math.abs(this.b-1) < 1e-6;
-    }
-
-    Frac.prototype.isNegative = function() {
-        return this.a < -1e-6;
-    }
-
-    Frac.prototype.toString = function() {
-        if (this.isInt()) return this.a+'';
-        return this.a + '/' + this.b;
-    }
-
-    Frac.prototype.toMJString = function(removeOne) {
-        if (this.isInt()) return (this.a != 1 || !removeOne ? this.a+'' : '');
-        return '\\frac{' + this.a + '}{' + this.b + '}';
-    }
-
-
-    var solve = function(sequence) {
-        var V = [];
-        var n = sequence.length;
-        for(var i=0; i<n; i++) {
-            var line = [];
-            for(var j=0; j<n; j++)
-                line.push(new Frac(Math.pow(i+1, j), 1));
-            line.push(new Frac(sequence[i], 1));
-            V.push(line);
-        }
-        solveMatrix(V);
-        return V.map(function(v){return v[n];});
-    };
-
-    var solveMatrix = function(V) {
-        var m = V.length, n=m+1;
-        for(var k=0; k<m; k++) {
-            for(var i=k+1; i<m; i++) {
-                var pivot = V[i][k].div(V[k][k]);
-                for(var j=k; j<n; j++)
-                    V[i][j] = V[i][j].sub(pivot.mul(V[k][j]));
-            }
-        }
-        for(var i=m-1; i>=0; i--) {
-            var pivot = V[i][i];
-            if (pivot.isZero()) break;
-
-            for(var j=i; j<n; j++) {
-                V[i][j] = V[i][j].div(pivot);
-            }
-
-            for(var j=i+1; j<n-1; j++) {
-                V[i][n-1] = V[i][n-1].sub(V[i][j].mul(V[j][n-1]));
-                V[i][j] = new Frac(0, 1);
-            }
-        }
-    }
-</script>
-
-<script>
-    var colorize = function () {
-        var raw = $('#sequence').val();
-        var func = $('#function').is(':checked');
-        window.location.hash = [encodeURIComponent(raw), func].join('/');
-
-        var input = raw.match(/[+-]*\d+/gi).map(Number);
-        var answer = solve(input, func);
-
-        var results = $('#result');
-        results.html('');
-        for(var i=0; i<input.length; i++) {
-            results.append($('<p>').text('$S_'+(i+1)+'='+input[i]+'$'))
-        }
-        var equation = '$S_n=';
-        var first = true;
-        for(var i=answer.length-1; i>=0; i--) {
-            if (answer[i].isZero()) continue;
-
-            if (!first || answer[i].isNegative())
-                equation += answer[i].isNegative() ? '-' : '+';
-            equation += answer[i].abs().toMJString(i>0) + ' ' + (i>0 ? i>1 ? ('n^' + i) : 'n': '');
-            first = false;
-        }
-        equation += '$';
-        results.append($('<p>').text(equation))
-
-        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-        $('#status').text('Ready.');
-    };
-
-    var colorize2 = _.debounce(colorize, 500);
-    var colorize3 = function () {
-        $('#status').text('Waiting (use Ctrl+Enter to avoid debouncing)...');
-        colorize2();
-    };
-
-    var triggerHash = function (first) {
-        var hash = window.location.hash;
-        if (hash.match(/^#/)) hash = hash.substr(1);
-        var args = hash.split('/');
-        args[0] = decodeURIComponent(args[0]);
-        if (first && !hash)
-            args[0] = args[0] || '1 4 9 16';
-        var el0 = $('#sequence');
-        var el1 = $('#function');
-        var val1 = (args[1] || 'true') === 'true';
-        if (first || el0.val() != args[0] || el1.is(':checked') != val1) {
-            el0.val(args[0]);
-            el1.prop('checked', val1);
-            colorize();
-        }
-    };
-
-    $(function () {
-        $('#sequence').on('input', colorize).on('keydown', function (e) {
-            if (e.ctrlKey && e.keyCode == 13) {
-                colorize();
-                e.preventDefault();
-            }
-        }).prop('disabled', false);
-        $('#function').on('click', colorize)
-        $(window).on('hashchange', function () {
-            triggerHash(false);
+    <script src="jquery-2.1.1.min.js"></script>
+    <script src="underscore-min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="mathjax/MathJax.js">
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX","output/HTML-CSS"],
+            tex2jax: {inlineMath: [["$","$"]]},
+            "HTML-CSS": { linebreaks: { automatic: true } },
+            SVG: { linebreaks: { automatic: true } }
         });
-        triggerHash(true);
-    });
-</script>
-<script>
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-5988212-2']);
-_gaq.push(['_setDomainName', 'none']);
-_gaq.push(['_setAllowLinker', true]);
-_gaq.push(['_trackPageview']);
+    </script>
 
-(function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-</script>
+    <script src="solver.js"></script>
 
+    <script>
+        var colorize = function () {
+            var raw = $('#sequence').val();
+            var func = $('#is_function').is(':checked');
+            var other = $('#is_other').is(':checked');
+            window.location.hash = [encodeURIComponent(raw), func, other].join('/');
+
+            var input = raw.match(/[+-]*\d+/gi).map(Number);
+            if (!other)
+                input.push(42);
+            var answer = solve(input, func);
+
+            var results = $('#result');
+            results.html('');
+            results.append($('<p>').text('Given:'));
+            for(var i=0; i<input.length; i++) {
+                results.append($('<p>').text('$S_{' + (i+1)+'}='+input[i]+'$'));
+            }
+
+            results.append($('<p>').text('we can define $S_n$:'));
+            var equation = '$S_n=';
+            var first = true;
+            for(var i=answer.length-1; i>=0; i--) {
+                if (answer[i].isZero()) continue;
+
+                if (!first || answer[i].isNegative())
+                equation += answer[i].isNegative() ? '-' : '+';
+                equation += answer[i].abs().toMJString(i>0) + ' ' + (i>0 ? i>1 ? ('n^{' + i + '}') : 'n': '');
+                first = false;
+            }
+            equation += '$';
+            results.append($('<p class="equation">').text(equation));
+
+            MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+            $('#status').text('Ready.');
+        };
+
+        var colorize2 = _.debounce(colorize, 500);
+        var colorize3 = function () {
+            $('#status').text('Waiting (use Ctrl+Enter to avoid debouncing)...');
+            colorize2();
+        };
+
+        var triggerHash = function (first) {
+            var hash = window.location.hash;
+            if (hash.match(/^#/)) hash = hash.substr(1);
+            var args = hash.split('/');
+            args[0] = decodeURIComponent(args[0]);
+            if (first && !hash) {
+                args[0] = args[0] || '1 2 3 4';
+            }
+            var el0 = $('#sequence');
+            var el1 = $('#is_function');
+            var el2 = $('#is_other');
+            var val1 = (args[1] || 'false') === 'true';
+            var val2 = (args[2] || 'false') === 'true';
+
+            if (first || el0.val() != args[0]) {
+                el0.val(args[0]);
+                if (val1)
+                    el1.click()
+                if (val2)
+                    el2.click();
+                colorize();
+            }
+        };
+
+        $(function () {
+            $('#sequence').on('input', colorize3).on('keydown', function (e) {
+                if (e.ctrlKey && e.keyCode == 13) {
+                    colorize();
+                    e.preventDefault();
+                }
+            }).prop('disabled', false);
+            $('#is_function,#is_sequence,#is_42,#is_other').on('change', colorize)
+            $(window).on('hashchange', function () {
+                triggerHash(false);
+            });
+            triggerHash(true);
+        });
+    </script>
+    <script>
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-5988212-2']);
+        _gaq.push(['_setDomainName', 'none']);
+        _gaq.push(['_setAllowLinker', true]);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
 </body>
 </html>
