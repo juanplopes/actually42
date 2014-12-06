@@ -88,6 +88,7 @@
     Frac.prototype.simplify = function() {
         if (this.isZero()) return new Frac(0, 1);
         var g = gcd(this.a, this.b);
+        if ((g<0) != (this.b<0)) g*=-1;
         return new Frac(this.a/g, this.b/g);
     }
 
@@ -115,13 +116,31 @@
         return this.mul(that.inv());
     }
 
+    Frac.prototype.abs = function(that) {
+        return new Frac(Math.abs(this.a), Math.abs(this.b));
+    }
+
+
     Frac.prototype.isZero = function() {
         return Math.abs(this.a) < 1e-6;
     }
 
+    Frac.prototype.isInt = function() {
+        return Math.abs(this.b-1) < 1e-6;
+    }
+
+    Frac.prototype.isNegative = function() {
+        return this.a < -1e-6;
+    }
+
     Frac.prototype.toString = function() {
-        if (Math.abs(this.b-1) < 1e-6) return this.a+'';
+        if (this.isInt()) return this.a+'';
         return this.a + '/' + this.b;
+    }
+
+    Frac.prototype.toMJString = function(removeOne) {
+        if (this.isInt()) return (this.a != 1 || !removeOne ? this.a+'' : '');
+        return '\\frac{' + this.a + '}{' + this.b + '}';
     }
 
 
@@ -135,10 +154,8 @@
             line.push(new Frac(sequence[i], 1));
             V.push(line);
         }
-        console.log(sequence);
-        console.table(V.map(function(v) { return v.map(function(x) { return x+'';});}));
         solveMatrix(V);
-        console.table(V.map(function(v) { return v.map(function(x) { return x+'';});}));
+        return V.map(function(v){return v[n];});
     };
 
     var solveMatrix = function(V) {
@@ -164,8 +181,6 @@
             }
         }
     }
-    solve([1, 4, 9, 16]);
-
 </script>
 
 <script>
@@ -173,6 +188,29 @@
         var raw = $('#sequence').val();
         var func = $('#function').is(':checked');
         window.location.hash = [encodeURIComponent(raw), func].join('/');
+
+        var input = raw.match(/[+-]*\d+/gi).map(Number);
+        var answer = solve(input, func);
+
+        var results = $('#result');
+        results.html('');
+        for(var i=0; i<input.length; i++) {
+            results.append($('<p>').text('$S_'+(i+1)+'='+input[i]+'$'))
+        }
+        var equation = '$S_n=';
+        var first = true;
+        for(var i=answer.length-1; i>=0; i--) {
+            if (answer[i].isZero()) continue;
+
+            if (!first || answer[i].isNegative())
+                equation += answer[i].isNegative() ? '-' : '+';
+            equation += answer[i].abs().toMJString(i>0) + ' ' + (i>0 ? i>1 ? ('n^' + i) : 'n': '');
+            first = false;
+        }
+        equation += '$';
+        results.append($('<p>').text(equation))
+
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
         $('#status').text('Ready.');
     };
 
@@ -200,7 +238,7 @@
     };
 
     $(function () {
-        $('#sequence').on('input', colorize3).on('keydown', function (e) {
+        $('#sequence').on('input', colorize).on('keydown', function (e) {
             if (e.ctrlKey && e.keyCode == 13) {
                 colorize();
                 e.preventDefault();
@@ -214,21 +252,17 @@
     });
 </script>
 <script>
-    (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r;
-        i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
-        a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-        a.async = 1;
-        a.src = g;
-        m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-5988212-2']);
+_gaq.push(['_setDomainName', 'none']);
+_gaq.push(['_setAllowLinker', true]);
+_gaq.push(['_trackPageview']);
 
-    ga('create', 'UA-54080923-1', 'auto');
-    ga('send', 'pageview');
-
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
 </script>
 
 </body>
