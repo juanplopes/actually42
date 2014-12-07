@@ -17,14 +17,14 @@
         font-size: 40px;
     }
 
-    @media (min-width: 768px) {
-        .container {
-            max-width: 730px;
-        }
+    .container {
+        max-width: 920px;
     }
 
     #sequence {
-        width: 100%;
+        width: 75%;
+        font-size: 20px;
+        padding: 5px;
         box-sizing: border-box;
         -webkit-box-sizing:border-box;
         -moz-box-sizing: border-box;
@@ -43,13 +43,16 @@
 
     .equation {
         font-size: 20px;
-        position: absolute;
         width: auto;
         left: 0;
         right: 0;
     }
     .explanation {
         margin-top: 20px;
+    }
+
+    #graph {
+        clear: both;
     }
 
     </style>
@@ -87,24 +90,18 @@
             </label>
         </p>
 
-
-
-        <p id="status">Initializing...</p>
-
-        <hr/>
-
         <div id="result">
 
         </div>
-    </div>
 
-    <div id="result">
-
+        <div id="graph" style="display: inline-block; width:600px;height:300px"></div>
     </div>
 
     <script src="jquery-2.1.1.min.js"></script>
     <script src="underscore-min.js"></script>
     <script src="bootstrap.min.js"></script>
+    <script src="flot/jquery.flot.min.js"></script>
+    <script src="flot/jquery.flot.navigate.min.js"></script>
     <script src="mathjax/MathJax.js">
         MathJax.Hub.Config({
             extensions: ["tex2jax.js"],
@@ -116,88 +113,8 @@
     </script>
 
     <script src="solver.js"></script>
+    <script src="ui.js"></script>
 
-    <script>
-        var colorize = function () {
-            var raw = $('#sequence').val();
-            var func = $('#is_function').is(':checked');
-            var other = $('#is_other').is(':checked');
-            window.location.hash = [encodeURIComponent(raw), func, other].join('/');
-
-            var input = raw.match(/[+-]*\d+/gi).map(Number);
-            if (!other)
-                input.push(42);
-            var answer = solve(input, func);
-
-            var results = $('#result');
-            results.html('');
-            results.append($('<p>').text('Given:'));
-            for(var i=0; i<input.length; i++) {
-                results.append($('<p>').text('$S_{' + (i+1)+'}='+input[i]+'$'));
-            }
-
-            results.append($('<p>').text('we can define $S_n$:'));
-            var equation = '$S_n=';
-            var first = true;
-            for(var i=answer.length-1; i>=0; i--) {
-                if (answer[i].isZero()) continue;
-
-                if (!first || answer[i].isNegative())
-                equation += answer[i].isNegative() ? '-' : '+';
-                equation += answer[i].abs().toMJString(i>0) + ' ' + (i>0 ? i>1 ? ('n^{' + i + '}') : 'n': '');
-                first = false;
-            }
-            equation += '$';
-            results.append($('<p class="equation">').text(equation));
-
-            MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-            $('#status').text('Ready.');
-        };
-
-        var colorize2 = _.debounce(colorize, 500);
-        var colorize3 = function () {
-            $('#status').text('Waiting (use Ctrl+Enter to avoid debouncing)...');
-            colorize2();
-        };
-
-        var triggerHash = function (first) {
-            var hash = window.location.hash;
-            if (hash.match(/^#/)) hash = hash.substr(1);
-            var args = hash.split('/');
-            args[0] = decodeURIComponent(args[0]);
-            if (first && !hash) {
-                args[0] = args[0] || '1 2 3 4';
-            }
-            var el0 = $('#sequence');
-            var el1 = $('#is_function');
-            var el2 = $('#is_other');
-            var val1 = (args[1] || 'false') === 'true';
-            var val2 = (args[2] || 'false') === 'true';
-
-            if (first || el0.val() != args[0]) {
-                el0.val(args[0]);
-                if (val1)
-                    el1.click()
-                if (val2)
-                    el2.click();
-                colorize();
-            }
-        };
-
-        $(function () {
-            $('#sequence').on('input', colorize3).on('keydown', function (e) {
-                if (e.ctrlKey && e.keyCode == 13) {
-                    colorize();
-                    e.preventDefault();
-                }
-            }).prop('disabled', false);
-            $('#is_function,#is_sequence,#is_42,#is_other').on('change', colorize3)
-            $(window).on('hashchange', function () {
-                triggerHash(false);
-            });
-            triggerHash(true);
-        });
-    </script>
     <script>
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-5988212-2']);

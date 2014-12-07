@@ -62,6 +62,10 @@ Frac.prototype.isNegative = function() {
     return this.a < -1e-6;
 }
 
+Frac.prototype.toNumber = function() {
+    return this.a / this.b;
+}
+
 Frac.prototype.toString = function() {
     if (this.isInt()) return this.a+'';
     return this.a + '/' + this.b;
@@ -111,4 +115,16 @@ var solveMatrix = function(V) {
             V[i][j] = new Frac(0, 1);
         }
     }
-}
+};
+
+var makeFunction = function(V) {
+    return function(x) {
+        var xx = new Frac(1, 1);
+        var res = new Frac(0, 1);
+        for(var i=0; i<V.length; i++) {
+            res = res.add(xx.mul(V[i]));
+            xx = xx.mul(new Frac(x, 1));
+        }
+        return res;
+    };
+};
