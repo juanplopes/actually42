@@ -88,7 +88,7 @@ var plotGraph = function(input, answer, toFind) {
 
     var pluckedX = _.chain(input).pluck(0).concat([toFind]);
     var pluckedY = _.chain(input).pluck(1).concat([fn(toFind).toNumber()]);
-    var minX = pluckedY.min().value(), maxX = pluckedY.max().value();
+    var minX = pluckedY.min().value(), maxX = pluckedY.max().value()+1;
 
     plot(pluckedX.min().value()-1, pluckedX.max().value()+1,
          minX - (maxX-minX)/2, maxX + (maxX-minX)/2);
