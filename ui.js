@@ -23,30 +23,35 @@ var colorize = function () {
 
 var plotGraph = function(input, answer, toFind) {
     var fn = makeFunction(answer);
-    var data = [];
-    var points = [];
-    for(var i=0; i<=input.length+2; i+=0.1) {
-        data.push([i, fn(i).toNumber()]);
-    }
-    for(var i=1; i<=input.length+1; i++) {
-        points.push([i, fn(i).toNumber(), fn(i)]);
-    }
-    var options = {
-        zoom: { interactive: true },
-        pan: { interactive: true }
+    var plot = function(fromX, toX) {
+        var data = [];
+        var points = [];
+        var step = (toX - fromX)/300;
+        for(var i=fromX; i<=toX; i+=step) {
+            data.push([i, fn(i).toNumber()]);
+        }
+        for(var i=1; i<=input.length+1; i++) {
+            if (i<fromX | i>toX) continue;
+            points.push([i, fn(i).toNumber(), fn(i)]);
+        }
+        var options = {
+            zoom: { interactive: true },
+            pan: { interactive: true }
+        };
+
+        var p = $.plot($("#graph"), [data, {data:points, points:{show:true}}], options);
+        $.each(p.getData()[1].data, function(i, el){
+            var o = p.pointOffset({x: el[0], y: el[1]});
+            $('<div class="data-point-label">' + el[2].toMJString(false) + '</div>').css( {
+                position: 'absolute',
+                left: o.left + 5,
+                top: o.top + 10,
+                display: 'none'
+            }).appendTo(p.getPlaceholder()).fadeIn('slow');
+        });
     };
 
-    var p = $.plot($("#graph"), [data, {data:points, points:{show:true}}], options);
-
-    $.each(p.getData()[1].data, function(i, el){
-        var o = p.pointOffset({x: el[0], y: el[1]});
-        $('<div class="data-point-label">$' + el[2].toMJString(false) + '$</div>').css( {
-            position: 'absolute',
-            left: o.left + 5,
-            top: o.top + 10,
-            display: 'none'
-        }).appendTo(p.getPlaceholder()).fadeIn('slow');
-    });
+    plot(0, input.length+2);
 };
 
 var showResult = function(input, answer) {
@@ -58,7 +63,7 @@ var showResult = function(input, answer) {
 
     results.html('');
     results.append($('<p>').text('Given:'));
-    results.append($('<p>').text(inputText.join(', ')));
+    results.append($('<p>').text(inputText.join(' ; ')));
 
     results.append($('<p>').text('we can define $S_n$:'));
     var equation = '$S_n=';
@@ -78,7 +83,7 @@ var showResult = function(input, answer) {
     results.append($('<p>').text('so the next term of the sequence is actually:'));
 
     var fn = makeFunction(answer);
-    results.append($('<p>').text('$S_{' + (input.length+1) + '} = ' + fn(input.length+1).toMJString() + '$'));
+    results.append($('<p class="next-term">').text('$S_{' + (input.length+1) + '} = ' + fn(input.length+1).toMJString() + '$'));
 
 };
 
@@ -110,7 +115,7 @@ var triggerHash = function (first) {
 
 $(function () {
     $('#sequence').on('input', colorize).on('keydown', function (e) {
-        if (e.ctrlKey && e.keyCode == 13) {
+        if (e.keyCode == 13) {
             colorize();
             e.preventDefault();
         }
