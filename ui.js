@@ -5,18 +5,30 @@ var colorize = function () {
     var other = $('#is_other').is(':checked');
     window.location.hash = [encodeURIComponent(raw), func, other].join('/');
 
-    var input = raw.match(/[+-]*\d+/gi).map(Number);
-    if (input.length == 0) return;
+    var numbers = raw.match(/[+-]*\d+/gi).map(Number);
+    if (numbers.length == 0) return;
+
+    var input = [];
+    var toFind;
+    if (func) {
+        for(var i=0; i+1<numbers.length; i+=2)
+            input.push([numbers[i], numbers[i+1]])
+        toFind = numbers.length%2==1?_.last(numbers):_.chain(input).pluck(0).max().value()+1;
+    } else {
+        for(var i=0; i<numbers.length; i++)
+            input.push([i+1, numbers[i]])
+        toFind = numbers.length+1;
+    }
 
     if (!other)
-        input.push(42);
+        input.push([toFind, 42]);
 
-    var answer = solve(input, func);
+    var answer = solve(input);
     if (!other)
         input.pop();
 
-    showResult(input, answer);
-    plotGraph(input, answer);
+    showResult(input, answer, toFind, func);
+    plotGraph(input, answer, toFind);
 
     MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 };
@@ -30,10 +42,18 @@ var plotGraph = function(input, answer, toFind) {
         for(var i=fromX; i<=toX; i+=step) {
             data.push([i, fn(i).toNumber()]);
         }
-        for(var i=1; i<=input.length+1; i++) {
-            if (i<fromX | i>toX) continue;
-            points.push([i, fn(i).toNumber(), fn(i)]);
+        console.log(fromX, toX, data);
+        for(var i=0; i<input.length; i++) {
+            var value = input[i][0];
+            if (value<fromX || value>toX) continue;
+            var result = fn(value);
+            points.push([value, result.toNumber(), result]);
         }
+        if (toFind>=fromX && toFind<=toX) {
+            var result = fn(toFind);
+            points.push([toFind, result.toNumber(), result]);
+        }
+
         var options = {
             zoom: { interactive: true },
             pan: { interactive: true }
@@ -42,7 +62,7 @@ var plotGraph = function(input, answer, toFind) {
         var p = $.plot($("#graph"), [data, {data:points, points:{show:true}}], options);
         $.each(p.getData()[1].data, function(i, el){
             var o = p.pointOffset({x: el[0], y: el[1]});
-            $('<div class="data-point-label">' + el[2].toMJString(false) + '</div>').css( {
+            $('<div class="data-point-label">$' + el[2].toMJString(false) + '$</div>').css( {
                 position: 'absolute',
                 left: o.left + 5,
                 top: o.top + 10,
@@ -51,22 +71,29 @@ var plotGraph = function(input, answer, toFind) {
         });
     };
 
-    plot(0, input.length+2);
+    plot(0, _.chain(input).pluck(0).concat([toFind]).max().value()+1);
 };
 
-var showResult = function(input, answer) {
+var showResult = function(input, answer, toFind, func) {
+    var makeName = function(value) {
+        if (func)
+            return 'f('+value+')';
+        else
+            return 'S_{'+value+'}';
+    }
+
     var results = $('#result');
     var inputText = [];
     for(var i=0; i<input.length; i++) {
-        inputText.push('$S_{' + (i+1)+'}='+input[i]+'$');
+        inputText.push('$' + makeName(input[i][0])+ '=' + input[i][1]+'$');
     }
 
     results.html('');
     results.append($('<p>').text('Given:'));
     results.append($('<p>').text(inputText.join(' ; ')));
 
-    results.append($('<p>').text('we can define $S_n$:'));
-    var equation = '$S_n=';
+    results.append($('<p>').text('we can define $' + makeName('n') + '$ as:'));
+    var equation = '$' + makeName('n') + '=';
     var first = true;
     for(var i=answer.length-1; i>=0; i--) {
         if (answer[i].isZero()) continue;
@@ -77,13 +104,18 @@ var showResult = function(input, answer) {
         equation += answer[i].abs().toMJString(i>0) + ' ' + (i>0 ? i>1 ? ('n^{' + i + '}') : 'n': '');
         first = false;
     }
+    if (first)
+        equation += '0';
     equation += '$';
     results.append($('<p class="equation">').text(equation));
 
-    results.append($('<p>').text('so the next term of the sequence is actually:'));
+    if (func)
+        results.append($('<p>').text('so the desired function value is actually:'));
+    else
+        results.append($('<p>').text('so the next term of the sequence is actually:'));
 
     var fn = makeFunction(answer);
-    results.append($('<p class="next-term">').text('$S_{' + (input.length+1) + '} = ' + fn(input.length+1).toMJString() + '$'));
+    results.append($('<p class="next-term">').text('$' + makeName(toFind) + ' = ' + fn(toFind).toMJString() + '$'));
 
 };
 

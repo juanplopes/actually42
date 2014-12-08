@@ -83,9 +83,9 @@ var solve = function(sequence) {
     for(var i=0; i<n; i++) {
         var line = [];
         for(var j=0; j<n; j++) {
-            line.push(new Frac(Math.pow(i+1, j), 1));
+            line.push(new Frac(Math.pow(sequence[i][0], j), 1));
         }
-        line.push(new Frac(sequence[i], 1));
+        line.push(new Frac(sequence[i][1], 1));
         V.push(line);
     }
     solveMatrix(V);
