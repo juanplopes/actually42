@@ -8,8 +8,13 @@ var colorize = function () {
     var other = $('#is_other').is(':checked');
     window.location.hash = [encodeURIComponent(raw), func, other].join('/');
 
-    var numbers = raw.match(/[+-]*\d+/gi).map(Number);
-    if (numbers.length == 0) return;
+    var numbers = raw.match(/[+-]*\d+/gi);
+    if (_.isEmpty(numbers)) {
+        $('#status').hide();
+        return;
+    }
+
+    numbers = numbers.map(Number);
 
     var input = [];
     var toFind;
@@ -46,7 +51,7 @@ var colorize3 = function () {
 
 var plotGraph = function(input, answer, toFind) {
     var fn = makeFunction(answer);
-    var plot = function(fromX, toX) {
+    var plot = function(fromX, toX, fromY, toY) {
         var data = [];
         var points = [];
         var step = (toX - fromX)/300;
@@ -65,8 +70,8 @@ var plotGraph = function(input, answer, toFind) {
         }
 
         var options = {
-            zoom: { interactive: true },
-            pan: { interactive: true }
+            xaxis: { min: fromX, max: toX },
+            yaxis: { min: fromY, max: toY }
         };
 
         var p = $.plot($("#graph"), [data, {data:points, points:{show:true}}], options);
@@ -81,7 +86,12 @@ var plotGraph = function(input, answer, toFind) {
         });
     };
 
-    plot(0, _.chain(input).pluck(0).concat([toFind]).max().value()+1);
+    var pluckedX = _.chain(input).pluck(0).concat([toFind]);
+    var pluckedY = _.chain(input).pluck(1).concat([fn(toFind).toNumber()]);
+    var minX = pluckedY.min().value(), maxX = pluckedY.max().value();
+
+    plot(pluckedX.min().value()-1, pluckedX.max().value()+1,
+         minX - (maxX-minX)/2, maxX + (maxX-minX)/2);
 };
 
 var showResult = function(input, answer, toFind, func) {
