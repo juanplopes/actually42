@@ -1,4 +1,7 @@
 var colorize = function () {
+    $('#status').show();
+    $('#status-text').text('Solving')
+
     $('#result,#graph').html('');
     var raw = $('#sequence').val();
     var func = $('#is_function').is(':checked');
@@ -29,8 +32,16 @@ var colorize = function () {
 
     showResult(input, answer, toFind, func);
     plotGraph(input, answer, toFind);
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub], function () {
+        $('#status').hide();
+    });
+};
 
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+var colorize2 = _.debounce(colorize, 500);
+var colorize3 = function () {
+    $('#status').show();
+    $('#status-text').text('Debouncing')
+    colorize2();
 };
 
 var plotGraph = function(input, answer, toFind) {
@@ -42,7 +53,6 @@ var plotGraph = function(input, answer, toFind) {
         for(var i=fromX; i<=toX; i+=step) {
             data.push([i, fn(i).toNumber()]);
         }
-        console.log(fromX, toX, data);
         for(var i=0; i<input.length; i++) {
             var value = input[i][0];
             if (value<fromX || value>toX) continue;
@@ -142,13 +152,13 @@ var triggerHash = function (first) {
 };
 
 $(function () {
-    $('#sequence').on('input', colorize).on('keydown', function (e) {
+    $('#sequence').on('input', colorize3).on('keydown', function (e) {
         if (e.keyCode == 13) {
             colorize();
             e.preventDefault();
         }
     }).prop('disabled', false);
-    $('#is_function,#is_other').on('change', colorize)
+    $('#is_function,#is_other').on('change', colorize3)
     $(window).on('hashchange', function () {
         triggerHash(false);
     });

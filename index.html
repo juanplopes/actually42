@@ -6,6 +6,7 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>It Is Actually 42</title>
+    <link href='loading.css' rel='stylesheet' type='text/css'>
     <link href='material/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='material/material.min.css' rel='stylesheet' type='text/css'>
     <link href='material/ripples.min.css' rel='stylesheet' type='text/css'>
@@ -20,8 +21,10 @@
             background-color: #00aff0;
             box-shadow: 0 1px 0 #00a6e4;
             color: #fff;
-            padding: 15px;
+            padding: 8px;
             margin-bottom: 30px;
+            z-index: 1000;
+            position: relative;
         }
 
         .header .checkbox {
@@ -110,6 +113,26 @@
             max-width: 600px !important;
             height: 300px;
         }
+
+        div#status {
+            content: ' ';
+            position: fixed;
+            height: 100%;
+            background: rgba(238,238,238,.95);
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            z-index: 1;
+            display: none;
+        }
+
+        div#status-text {
+            top: 50%;
+            margin-top: 40px;
+            position: relative;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -139,11 +162,28 @@
             </label>
         </div>
     </div>
-    <div id="result">
+    <div>
+        <div id="result">
 
+        </div>
+
+        <div id="graph"></div>
+
+        <div id="status">
+            <div class="loader">
+              <div class="side"></div>
+              <div class="side"></div>
+              <div class="side"></div>
+              <div class="side"></div>
+              <div class="side"></div>
+              <div class="side"></div>
+              <div class="side"></div>
+              <div class="side"></div>
+            </div>
+            <div id="status-text">Loading</div>
+        </div>
     </div>
 
-    <div id="graph"></div>
 
     <script src="jquery-2.1.1.min.js"></script>
     <script src="underscore-min.js"></script>
