@@ -6,52 +6,49 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>It Is Actually 42</title>
-    <link rel="stylesheet" href="bootstrap.min.css">
     <style>
+        body {
+            text-align: center;
+        }
 
-    body {
-        text-align: center;
-    }
+        h1 {
+            font-size: 40px;
+        }
 
-    h1 {
-        font-size: 40px;
-    }
+        #sequence {
+            width: 100%;
+            max-width: 600px;
+            font-size: 20px;
+            padding: 5px;
+            box-sizing: border-box;
+            -webkit-box-sizing:border-box;
+            -moz-box-sizing: border-box;
+        }
 
-    #sequence {
-        width: 100%;
-        max-width: 600px;
-        font-size: 20px;
-        padding: 5px;
-        box-sizing: border-box;
-        -webkit-box-sizing:border-box;
-        -moz-box-sizing: border-box;
-    }
+        .btn.function {
+            width: 120px;
+            max-size: 49%;
 
-    .btn.function {
-        width: 120px;
-        max-size: 49%;
+        }
 
-    }
+        .btn.other {
+            width: 180px;
+            max-width: 49%;
+        }
 
-    .btn.other {
-        width: 180px;
-        max-width: 49%;
-    }
+        .equation {
+            font-size: 20px;
+            width: auto;
+            left: 0;
+            right: 0;
+        }
+        .explanation {
+            margin-top: 20px;
+        }
 
-    .equation {
-        font-size: 20px;
-        width: auto;
-        left: 0;
-        right: 0;
-    }
-    .explanation {
-        margin-top: 20px;
-    }
-
-    #graph {
-        clear: both;
-    }
-
+        #graph {
+            clear: both;
+        }
     </style>
 </head>
 <body>
@@ -83,7 +80,6 @@
 
     <script src="jquery-2.1.1.min.js"></script>
     <script src="underscore-min.js"></script>
-    <script src="bootstrap.min.js"></script>
     <script src="flot/jquery.flot.min.js"></script>
     <script src="flot/jquery.flot.navigate.min.js"></script>
     <script src="mathjax/MathJax.js">
