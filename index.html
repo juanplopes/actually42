@@ -46,8 +46,11 @@
             margin-top: 20px;
         }
 
-        #graph {
-            clear: both;
+        #graph, #graph canvas {
+            display: inline-block;
+            width: 100% !important;
+            max-width: 600px !important;
+            height: 300px;
         }
     </style>
 </head>
@@ -75,7 +78,7 @@
 
         </div>
 
-        <div id="graph" style="display: inline-block; width:600px;height:300px"></div>
+        <div id="graph"></div>
     </div>
 
     <script src="jquery-2.1.1.min.js"></script>
