@@ -47,7 +47,7 @@ var plotGraph = function(input, answer, toFind) {
                 left: o.left + 5,
                 top: o.top + 10,
                 display: 'none'
-            }).appendTo(p.getPlaceholder()).fadeIn('slow');
+            }).appendTo(p.getPlaceholder()).show();
         });
     };
 
@@ -103,12 +103,8 @@ var triggerHash = function (first) {
 
     if (first || el0.val() != args[0]) {
         el0.val(args[0]);
-        if (val1) {
-            el1.click();
-        }
-        if (val2) {
-            el2.click();
-        }
+        el1.attr('checked', val1);
+        el2.attr('checked', val2);
         colorize();
     }
 };
