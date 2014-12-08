@@ -1,29 +1,35 @@
 var colorize = function () {
+    $('#result,#graph').html('');
     var raw = $('#sequence').val();
     var func = $('#is_function').is(':checked');
     var other = $('#is_other').is(':checked');
     window.location.hash = [encodeURIComponent(raw), func, other].join('/');
 
     var input = raw.match(/[+-]*\d+/gi).map(Number);
-    if (!other) {
+    if (input.length == 0) return;
+
+    if (!other)
         input.push(42);
-    }
+
     var answer = solve(input, func);
+    if (!other)
+        input.pop();
+
     showResult(input, answer);
     plotGraph(input, answer);
 
     MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 };
 
-var plotGraph = function(input, answer) {
+var plotGraph = function(input, answer, toFind) {
     var fn = makeFunction(answer);
     var data = [];
     var points = [];
-    for(var i=0; i<=input.length+1; i+=0.1) {
+    for(var i=0; i<=input.length+2; i+=0.1) {
         data.push([i, fn(i).toNumber()]);
     }
-    for(var i=1; i<=input.length; i++) {
-        points.push([i, fn(i).toNumber()]);
+    for(var i=1; i<=input.length+1; i++) {
+        points.push([i, fn(i).toNumber(), fn(i)]);
     }
     var options = {
         zoom: { interactive: true },
@@ -34,7 +40,7 @@ var plotGraph = function(input, answer) {
 
     $.each(p.getData()[1].data, function(i, el){
         var o = p.pointOffset({x: el[0], y: el[1]});
-        $('<div class="data-point-label">$S_{' + el[0] + '} = ' + el[1] + '$</div>').css( {
+        $('<div class="data-point-label">$' + el[2].toMJString(false) + '$</div>').css( {
             position: 'absolute',
             left: o.left + 5,
             top: o.top + 10,
@@ -72,7 +78,7 @@ var showResult = function(input, answer) {
     results.append($('<p>').text('so the next term of the sequence is actually:'));
 
     var fn = makeFunction(answer);
-    results.append($('<p>').text('$' + fn(7).toMJString() + '$'));
+    results.append($('<p>').text('$S_{' + (input.length+1) + '} = ' + fn(input.length+1).toMJString() + '$'));
 
 };
 
@@ -109,7 +115,7 @@ $(function () {
             e.preventDefault();
         }
     }).prop('disabled', false);
-    $('#is_function,#is_sequence,#is_42,#is_other').on('change', colorize)
+    $('#is_function,#is_other').on('change', colorize)
     $(window).on('hashchange', function () {
         triggerHash(false);
     });

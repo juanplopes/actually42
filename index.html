@@ -17,12 +17,9 @@
         font-size: 40px;
     }
 
-    .container {
-        max-width: 920px;
-    }
-
     #sequence {
-        width: 75%;
+        width: 100%;
+        max-width: 600px;
         font-size: 20px;
         padding: 5px;
         box-sizing: border-box;
@@ -59,36 +56,23 @@
 </head>
 <body>
     <div class="container">
-        <p class="explanation">
-            Why do people keep asking to find the next term in sequences?
-            Anyone with real math knowledge knows there are infinite answers.
-            So, from now on, the next term for any sequence I see will
-            always be the same:
+        <p>
+            Next term of the sequence? It is actually 42.
         </p>
-        <h1 class="title">It Is Actually 42</h1>
-
-
-        <p class="btn-group" data-toggle="buttons">
-            <label class="btn btn-primary function active">
-                <input type="radio" name="function" id="is_sequence" autocomplete="off" checked> Sequence
-            </label>
-            <label class="btn btn-primary function">
-                <input type="radio" name="function" id="is_function" autocomplete="off"> Function
-            </label>
-        </p>
-
         <p class="sequences">
             <input id="sequence" disabled="disabled"></textarea>
         </p>
 
-        <p class="btn-group" data-toggle="buttons">
-            <label class="btn btn-primary other active">
-                <input type="radio" name="other" id="is_42" autocomplete="off" checked> Is actually 42
+        <p>
+            <label>
+                <input type="checkbox" id="is_function"> $f(x) = y$
             </label>
-            <label class="btn btn-primary other">
-                <input type="radio" name="other" id="is_other" autocomplete="off"> Something else
+            <label>
+                <input type="checkbox" id="is_other"> $S_{next} \neq 42$
             </label>
         </p>
+
+        <hr/>
 
         <div id="result">
 
@@ -107,6 +91,7 @@
             extensions: ["tex2jax.js"],
             jax: ["input/TeX","output/HTML-CSS"],
             tex2jax: {inlineMath: [["$","$"]]},
+            showMathMenu: false,
             "HTML-CSS": { linebreaks: { automatic: true } },
             SVG: { linebreaks: { automatic: true } }
         });
