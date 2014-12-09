@@ -13,7 +13,9 @@ var colorize = function () {
     var numbers = raw.match(/[+-]*\d+/gi);
     if (_.isEmpty(numbers)) {
         $('#why-result').show();
-        $('#status').hide();
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub], function () {
+            $('#status').hide();
+        });
         return;
     }
     $('#full-result').show();
