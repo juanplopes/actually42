@@ -152,6 +152,11 @@ div#why-result {
     max-width: 800px;
     width: 100%;
     padding: 30px;
+    display: none;
+}
+
+div#full-result {
+    display: none;
 }
 
 div#why-result p {
