@@ -5,151 +5,30 @@
     <!--[if IE]>
     <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>It Is Actually 42</title>
+    <title>Actually, It's 42</title>
     <link href='loading.css' rel='stylesheet' type='text/css'>
+    <link href='style.css' rel='stylesheet' type='text/css'>
     <link href='material/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='material/material.min.css' rel='stylesheet' type='text/css'>
     <link href='material/ripples.min.css' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Roboto:500,300,700,400' rel='stylesheet' type='text/css'>
-
-    <style>
-        body {
-            text-align: center;
-        }
-
-        .header {
-            background-color: #00aff0;
-            box-shadow: 0 1px 0 #00a6e4;
-            color: #fff;
-            padding: 8px;
-            margin-bottom: 30px;
-            z-index: 1000;
-            position: relative;
-        }
-
-        .header .checkbox {
-            display: inline-block;
-        }
-        .header .checkbox .ripple {
-            display: inline-block;
-            top: -5px;
-            left: -4px;
-        }
-
-        .header .checkbox label {
-            text-align: left;
-            width: 180px;
-            border: 2px solid #fff;
-            padding: 5px 5px 10px 15px;
-            margin: 0px 5px;
-            -webkit-border-radius: 5px;
-            -moz-border-radius: 5px;
-            border-radius: 5px;
-        }
-
-        .header .checkbox input[type=checkbox]:checked~.check,
-        .header .checkbox input[type=checkbox]:checked~.check:before,
-        .header .checkbox-default input[type=checkbox]:checked~.check:before
-         {
-            color: #eee;
-        }
-
-
-        .header h1 {
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .header span.title {
-            position: relative;
-            top: 20px;
-            font-weight: 300;
-            font-size: 14px;
-        }
-
-
-        #sequence {
-            width: 100%;
-            max-width: 600px;
-            font-size: 20px;
-            padding: 5px;
-            color: #666666;
-            border: none;
-        }
-
-        .btn.function {
-            width: 120px;
-            max-size: 49%;
-
-        }
-
-        .btn.other {
-            width: 180px;
-            max-width: 49%;
-        }
-
-        .equation {
-            font-size: 20px;
-            width: auto;
-            left: 0;
-            right: 0;
-        }
-
-        #result p {
-            margin: 20px;
-        }
-
-        .next-term {
-            font-size: 32px;
-        }
-
-        .explanation {
-            margin-top: 20px;
-        }
-
-        #graph, #graph canvas {
-            display: inline-block;
-            width: 100% !important;
-            max-width: 600px !important;
-            height: 300px;
-        }
-
-        div#status {
-            content: ' ';
-            position: fixed;
-            height: 100%;
-            background: rgba(238,238,238,.95);
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            z-index: 1;
-            display: none;
-        }
-
-        div#status-text {
-            top: 50%;
-            margin-top: 40px;
-            position: relative;
-            text-align: center;
-        }
-    </style>
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="header">
         <span class="title">Next term of the sequence?</span>
-        <h1>It is actually 42</h1>
+        <h1><a href="">Actually, It's 42</a> <a href="#why" class="why">(why?)</a></h1>
         <p class="sequences">
             <input id="sequence" disabled="disabled"></input>
-
         </p>
 
         <div class="checkbox">
             <label class="option">
                 <input type="checkbox" id="is_function" />
                 <span class="ripple"></span>
+                <div class="ripple-wrapper"></div>
                 <span class="check"></span>
-                is a function
+                f(x) = y
             </label>
         </div>
 
@@ -157,17 +36,104 @@
             <label class="option">
                 <input type="checkbox" id="is_other" />
                 <span class="ripple"></span>
+                <div class="ripple-wrapper"></div>
                 <span class="check"></span>
-                not actually 42
+                &#8800; 42
             </label>
         </div>
     </div>
     <div>
-        <div id="result">
+        <div id="full-result">
+            <div id="result">
 
+            </div>
+
+            <div id="graph"></div>
         </div>
+        <div id="why-result">
+            <h2>Why?</h2>
 
-        <div id="graph"></div>
+            <p>
+                What is the next term in the sequence $1, 2, 3, 4, ...$?
+                If you say it's $5$, you're right. But if you say $42$, you
+                are also right. Actually, if you say any number, real or complex,
+                you are completely right.
+            </p>
+            <p>
+                This kind of question doesn't have a single result, or even
+                a finite set of results. There are infinite sequences that fit
+                into the given points. That's the point of this site: to show
+                at least one non-trivial sequence.
+            </p>
+            <p>
+                Here, the next term of any given sequence will be $42$, and we'll
+                show which function defines it.
+            </p>
+
+            <h2>How?</h2>
+
+            <p>
+                The algorithm in this site performs a
+                <a href="http://en.wikipedia.org/wiki/Curve_fitting">curve fitting</a>.
+                It generates a curve (a polynomial one) that fits to the input data.
+                This curve is found by solving a system of linear equations.
+            </p>
+            <p>
+                For example, let's say the user inputs the sequence $1, 2, 3, 4$.
+                As we want the next term to be $42$, we also add it to the input.
+                Then, we need to find a polynomial $S_n = an^4+bn^3+cn^2+dn+e$ that
+                fits all the data. We know that if $n=1$, then $S_n=1$. Following
+                this rationale, we have the system:
+            </p>
+
+            $$\begin{alignat*}{9}
+            a   & + b   & + & c  & +&d  & +e & = & 1 \\
+            16a & + 8b  & + &4c & +&2d & +e & = & 2 \\
+            81a & + 27b  & +& 9c & +&3d & +e & = & 3 \\
+            256a & + 64b  & + &16c & +&4d & +e & = & 4 \\
+            625a & + 125b  & + &25c & +&5d & +e & = & 42 \\
+            \end{alignat*}$$
+
+            <p>
+                The algorithm then solves the system using
+                <a href="http://en.wikipedia.org/wiki/Gaussian_elimination">Gaussian elimination</a>.
+                Initially, the system's matrix looks like this:
+            </p>
+
+            $$
+            \left[
+            \begin{array}{ccccc|c}
+            1   & 1   & 1  & 1 & 1 & 1 \\
+            16  & 8   & 4  & 2 & 1 & 2 \\
+            81  & 27  & 9  & 3 & 1 & 3\\
+            256 & 64  & 16 & 4 & 1 & 4\\
+            625 & 125 & 25 & 5 & 1 & 42\\
+            \end{array}
+            \right]
+            $$
+
+            <p>
+                But after the Gaussian elimination, we'll have a matrix like this:
+            </p>
+
+            $$
+            \left[
+            \begin{array}{ccccc|c}
+            1 & 0 & 0 & 0 & 0 & ^{37}/_{24} \\
+            0 & 1 & 0 & 0 & 0 & ^{-185}/_{12} \\
+            0 & 0 & 1 & 0 & 0 & ^{1295}/_{24}\\
+            0 & 0 & 0 & 1 & 0 & ^{-913}/_{12}\\
+            0 & 0 & 0 & 0 & 1 & 37\\
+            \end{array}
+            \right]
+            $$
+
+            <p>
+                This result shows that if
+                $S_{n}=\frac{37}{24} n^{4}-\frac{185}{12} n^{3}+\frac{1295}{24} n^{2}-\frac{913}{12} n+37$
+                then $S_n$ will fit to all the given points. <a href="#1,2,3,4">See it in action</a>.
+            </p>
+        </div>
 
         <div id="status">
             <div class="loader">
@@ -181,6 +147,17 @@
               <div class="side"></div>
             </div>
             <div id="status-text">Loading</div>
+        </div>
+
+        <div id="credits">
+            <p>
+                <a href="">Actually, It's 42</a>
+                is a proof-of-concept created by <a href="https://github.com/juanplopes">Juan Lopes</a>.
+            </p>
+            <p>
+                It has a highly messy <a href="https://github.com/juanplopes/actually42"><i class="fa fa-github"></i> javascript code</a>.
+                Feel free to mess around.
+            </p>
         </div>
     </div>
 

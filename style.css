@@ -1,0 +1,171 @@
+body {
+    text-align: center;
+}
+
+a, a:hover {
+    text-decoration: none !important;
+    font-weight: bold;
+}
+
+a.why {
+    position: relative;
+    font-size: 12px;
+    top: -20px;
+    font-weight: 300px;
+}
+
+.header {
+    background-color: #00aff0;
+    box-shadow: 0 1px 0 #00a6e4;
+    color: #fff;
+    padding: 8px;
+    margin-bottom: 50px;
+    z-index: 1000;
+    position: relative;
+}
+
+.header:after {
+    top: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(136, 183, 213, 0);
+    border-top-color: #00aff0;
+    border-width: 30px;
+    margin-left: -30px;
+}
+
+.header .checkbox {
+    display: inline-block;
+}
+.header .checkbox .ripple {
+    display: inline-block;
+    top: -5px;
+    left: -4px;
+}
+
+.header .checkbox label:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.header .checkbox label {
+    text-align: left;
+    width: 120px;
+    border: 2px solid #fff;
+    padding: 5px 5px 10px 15px;
+    margin: 0px 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+
+.header .checkbox input[type=checkbox]:checked~.check,
+.header .checkbox input[type=checkbox]:checked~.check:before,
+.header .checkbox-default input[type=checkbox]:checked~.check:before
+{
+    color: #eee;
+}
+
+
+.header h1 a {
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.header span.title {
+    position: relative;
+    top: 20px;
+    font-weight: 300;
+    font-size: 14px;
+}
+
+
+#sequence {
+    width: 100%;
+    max-width: 600px;
+    font-size: 20px;
+    padding: 5px;
+    color: #666666;
+    border: none;
+}
+
+.btn.function {
+    width: 120px;
+    max-size: 49%;
+
+}
+
+.btn.other {
+    width: 180px;
+    max-width: 49%;
+}
+
+.equation {
+    font-size: 20px;
+    width: auto;
+    left: 0;
+    right: 0;
+}
+
+#result p {
+    margin: 20px;
+}
+
+.next-term {
+    font-size: 32px;
+}
+
+.explanation {
+    margin-top: 20px;
+}
+
+#graph, #graph canvas {
+    display: inline-block;
+    width: 100% !important;
+    max-width: 600px !important;
+    height: 300px;
+}
+
+div#status {
+    content: ' ';
+    position: fixed;
+    height: 100%;
+    background: rgba(238,238,238,.95);
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 1;
+    display: none;
+}
+
+div#why-result {
+    background: #fff;
+    display: inline-block;
+    text-align: left;
+    max-width: 800px;
+    width: 100%;
+    padding: 30px;
+}
+
+div#why-result p {
+    text-indent: 3em;
+}
+
+div#status-text {
+    top: 50%;
+    margin-top: 40px;
+    position: relative;
+    text-align: center;
+}
+
+div#credits {
+    margin-top: 30px;
+    font-size: 87.5%;
+}

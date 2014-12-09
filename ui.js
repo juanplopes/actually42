@@ -1,6 +1,8 @@
 var colorize = function () {
     $('#status').show();
     $('#status-text').text('Solving')
+    $('#why-result,#full-result').hide();
+
 
     $('#result,#graph').html('');
     var raw = $('#sequence').val();
@@ -10,9 +12,11 @@ var colorize = function () {
 
     var numbers = raw.match(/[+-]*\d+/gi);
     if (_.isEmpty(numbers)) {
+        $('#why-result').show();
         $('#status').hide();
         return;
     }
+    $('#full-result').show();
 
     numbers = numbers.map(Number);
 
@@ -74,7 +78,7 @@ var plotGraph = function(input, answer, toFind) {
             yaxis: { min: fromY, max: toY }
         };
 
-        var p = $.plot($("#graph"), [data, {data:points, points:{show:true}}], options);
+        var p = $.plot($("#graph"), [{data:data, color:'#00aff0'}, {data:points, points:{show:true}, color:'#00aff0'}], options);
         $.each(p.getData()[1].data, function(i, el){
             var o = p.pointOffset({x: el[0], y: el[1]});
             $('<div class="data-point-label">$' + el[2].toMJString(false) + '$</div>').css( {
@@ -113,21 +117,26 @@ var showResult = function(input, answer, toFind, func) {
     results.append($('<p>').text(inputText.join(' ; ')));
 
     results.append($('<p>').text('we can define $' + makeName('n') + '$ as:'));
-    var equation = '$' + makeName('n') + '=';
+    var equation = makeName('n') + '=';
+    var simpleEq = 'y=';
     var first = true;
     for(var i=answer.length-1; i>=0; i--) {
         if (answer[i].isZero()) continue;
 
         if (!first || answer[i].isNegative()) {
             equation += answer[i].isNegative() ? '-' : '+';
+            simpleEq+= answer[i].isNegative() ? '-' : '+';
         }
         equation += answer[i].abs().toMJString(i>0) + ' ' + (i>0 ? i>1 ? ('n^{' + i + '}') : 'n': '');
+        simpleEq+= '(' + answer[i].abs() + ')' + (i>0 ? i>1 ? ('x^(' + i + ')') : 'x': '');
         first = false;
     }
-    if (first)
+    if (first) {
         equation += '0';
-    equation += '$';
-    results.append($('<p class="equation">').text(equation));
+        simpleEq += '0';
+    }
+    equation;
+    results.append($('<p class="equation">').text('$' + equation + '$'));
 
     if (func)
         results.append($('<p>').text('so the desired function value is actually:'));
@@ -137,6 +146,9 @@ var showResult = function(input, answer, toFind, func) {
     var fn = makeFunction(answer);
     results.append($('<p class="next-term">').text('$' + makeName(toFind) + ' = ' + fn(toFind).toMJString() + '$'));
 
+    var wolfram = 'http://www.wolframalpha.com/input/?i=' + encodeURIComponent(equation);
+    var google = 'https://www.google.com.br/webhp?#q=' + encodeURIComponent(simpleEq);
+    results.append('<p>See result in: <a href="' + wolfram + '">Wolfram Alpha</a>, <a href="' + google + '">Google</a></p>');
 };
 
 var triggerHash = function (first) {
